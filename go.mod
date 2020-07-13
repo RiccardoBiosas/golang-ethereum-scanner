@@ -3,7 +3,9 @@ module github.com/RiccardoBiosas/golang-ethereum-scanner
 go 1.14
 
 require (
+	github.com/ethereum/go-ethereum v1.9.16
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/joho/godotenv v1.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/pelletier/go-toml v1.8.0 // indirect

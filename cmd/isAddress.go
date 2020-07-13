@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 NAME HERE <rbios@protonmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,23 +16,32 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"log"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/spf13/cobra"
+
+	client "github.com/RiccardoBiosas/golang-ethereum-scanner/client"
 )
 
 // isAddressCmd represents the isAddress command
 var isAddressCmd = &cobra.Command{
 	Use:   "isAddress",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "CLI command to check whether a given address is a contract or an account",
+	Long: `The isAddress CLI command takes a valid ethereum address as an argument and
+			subsequently check whethere there's bytecode stored on the given address. If
+			positive, the address is a contract and the output is true, otherwise the address
+			is an account and the output is false.
+			Example: golang-ethereum-scanner isAddress 0x773cc2e2cbda9945f4e69e26e516708d66e45dc2
+			`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("isAddress called")
+		c := client.Client{}
+		c.Mount()
+		checkAddress(args[0], c.EthereumClient)
 	},
 }
 
@@ -48,4 +57,16 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// isAddressCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func checkAddress(pb string, client *ethclient.Client) {
+	fmt.Println("address as argument is ", pb)
+	address := common.HexToAddress(pb)
+	bytecode, err := client.CodeAt(context.Background(), address, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	isContract := len(bytecode) > 0
+	fmt.Printf("The address is a contract: %v \n", isContract)
+
 }
